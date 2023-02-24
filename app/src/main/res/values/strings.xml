@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">FlibustaPicker</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="find_label">Find book in flibusta</string>
+    <string name="book_name">...book name</string>
+    <string name="was_founded_nothing">Was founded nothing</string>
+</resources>
