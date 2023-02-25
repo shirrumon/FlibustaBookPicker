@@ -31,7 +31,7 @@ class FlibustaApi {
         }
         .build()
 
-    suspend fun findBooksByName(bookName: String): List<BookModel> {
+    fun findBooksByName(bookName: String): List<BookModel> {
         val result = mutableListOf<BookModel>()
 
         val doc = Jsoup.connect(
@@ -73,30 +73,3 @@ class FlibustaApi {
         return result
     }
 }
-
-//        Log.e("test", resultFromSearch.toString())
-//
-//        resultFromSearch.forEach { includedMap ->
-//            includedMap.forEach { map ->
-//                val bookModel = BookModel(map.key)
-//                val docInside = Jsoup.connect(
-//                    baseUrl + map.value
-//                ).get()
-//                docInside.select("div.g-network_literature").select("a")
-//                    .forEach {
-//                        if (it.attr("href").contains("/b/", ignoreCase = true)) {
-//                            val regex = "([^\\/]+\$)".toRegex()
-//                            when(regex.find(it.attr("href"))?.value) {
-//                                "fb2" -> bookModel.fbLink = map.value + "/fb2"
-//                                "txt" -> bookModel.txtLink = map.value + "/txt"
-//                                "pdf" -> bookModel.pdfLink = map.value + "/pdf"
-//                                "epub" -> bookModel.epubLink = map.value + "/epub"
-//                                "mobi" -> bookModel.mobiLink = map.value + "/mobi"
-//                                "rtf"  -> bookModel.rtfLink = map.value + "/rtf"
-//                            }
-//                        }
-//                    }
-//
-//                result.add(bookModel)
-//            }
-//        }

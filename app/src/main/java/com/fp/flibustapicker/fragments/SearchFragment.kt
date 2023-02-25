@@ -1,9 +1,12 @@
 package com.fp.flibustapicker.fragments
 
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -12,6 +15,7 @@ import com.fp.flibustapicker.R
 import com.fp.flibustapicker.adapters.SearchListAdapter
 import com.fp.flibustapicker.databinding.SearchListElementBinding
 import com.fp.flibustapicker.models.BookModel
+import com.fp.flibustapicker.viewModels.NotificationsViewModel
 import com.fp.flibustapicker.viewModels.SearchViewModel
 import com.google.android.material.chip.Chip
 import com.google.android.material.search.SearchBar
@@ -22,7 +26,14 @@ class SearchFragment : Fragment() {
     private lateinit var binding: SearchListElementBinding
     private var taskListEntities: List<BookModel> = arrayListOf()
     private lateinit var searchViewModel: SearchViewModel
+    private lateinit var notifyViewModel: NotificationsViewModel
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        notifyViewModel = ViewModelProvider(requireActivity())[NotificationsViewModel::class.java]
+    }
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -43,6 +54,10 @@ class SearchFragment : Fragment() {
                 searchView.hide()
                 true
             }
+
+        view.findViewById<Button>(R.id.buttonId).setOnClickListener {
+            notifyViewModel.showSimpleNotification()
+        }
 
         return view
     }
