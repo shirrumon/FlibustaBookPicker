@@ -7,8 +7,9 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.fp.flibustapicker.databinding.SearchListElementBinding
 import com.fp.flibustapicker.models.BookModel
+import com.fp.flibustapicker.viewModels.NotificationsViewModel
 
-class SearchListAdapter:
+class SearchListAdapter(val notificationsViewModel: NotificationsViewModel):
     ListAdapter<BookModel, SearchListAdapter.MainViewHolder>(ItemComparator()) {
 
     class MainViewHolder(private val binding: SearchListElementBinding) :

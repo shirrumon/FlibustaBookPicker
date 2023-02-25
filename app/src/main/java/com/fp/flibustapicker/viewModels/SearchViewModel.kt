@@ -5,12 +5,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fp.flibustapicker.api.FlibustaApi
 import com.fp.flibustapicker.models.BookModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class SearchViewModel: ViewModel() {
-    private val repository: FlibustaApi = FlibustaApi()
+@HiltViewModel
+class SearchViewModel @Inject constructor(notificationsViewModel: NotificationsViewModel): ViewModel() {
+    private val repository: FlibustaApi = FlibustaApi(notificationsViewModel)
 
     fun searchBook(bookName: String): MutableLiveData<List<BookModel>> {
         val mutableResponse: MutableLiveData<List<BookModel>> = MutableLiveData()

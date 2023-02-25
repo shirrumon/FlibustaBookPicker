@@ -1,6 +1,8 @@
 package com.fp.flibustapicker.viewModels
 
 import android.Manifest
+import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.Application
 import android.content.pm.PackageManager
 import android.os.Build
@@ -9,62 +11,44 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.fp.flibustapicker.MainActivity.Companion.applicationContext
 import com.fp.flibustapicker.di.MainNotificationCompatBuilder
 import com.fp.flibustapicker.di.SecondNotificationCompatBuilder
+import dagger.hilt.android.internal.Contexts.getApplication
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 class NotificationsViewModel @Inject constructor(
     @MainNotificationCompatBuilder
-    private val notificationBuilder: NotificationCompat.Builder,
+     val notificationBuilder: NotificationCompat.Builder,
     @SecondNotificationCompatBuilder
-    private val notificationBuilder2: NotificationCompat.Builder,
-    private val notificationManager: NotificationManagerCompat,
-    application: Application
-): AndroidViewModel(application) {
-
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-    fun showSimpleNotification() {
-        if (ActivityCompat.checkSelfPermission(
-                getApplication(),
-                Manifest.permission.POST_NOTIFICATIONS
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-
-            ActivityCompat.requestPermissions(getApplication(), arrayOf(Manifest.permission.POST_NOTIFICATIONS), 102)
-            return
-        }
-        fun updateSimpleNotification() {
-            notificationManager.notify(1, notificationBuilder
-                .setContentTitle("NEW TITLE")
-                .build()
-            )
-        }
-
-        fun cancelSimpleNotification() {
-            notificationManager.cancel(1)
-        }
-
-        fun showProgress() {
-            val max = 10
-            var progress = 0
-            viewModelScope.launch {
-                while (progress != max) {
-                    delay(1000)
-                    progress += 1
-                    notificationManager.notify(
-                        3,
-                        notificationBuilder2
-                            .setContentTitle("Downloading")
-                            .setContentText("${progress}/${max}")
-                            .setProgress(max, progress, false).build()
-                    )
-                }
+     val notificationBuilder2: NotificationCompat.Builder,
+     val notificationManager: NotificationManagerCompat,
+) : ViewModel() {
+    val countOfPercentage: MutableLiveData<Int> = MutableLiveData()
+    @SuppressLint("MissingPermission")
+    fun showProgress() {
+        val max = 10
+        var progress = 0
+        viewModelScope.launch {
+            if (progress != max) {
+                delay(1000)
+                progress += 1
+                notificationManager.notify(
+                    3,
+                    notificationBuilder2
+                        .setContentTitle("Downloading")
+                        .setContentText("${progress}/${max}")
+                        .setProgress(max, progress, false).build()
+                )
+            } else {
                 notificationManager.notify(
                     3,
                     notificationBuilder

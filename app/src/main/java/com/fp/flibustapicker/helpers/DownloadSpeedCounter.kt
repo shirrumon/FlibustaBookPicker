@@ -1,12 +1,10 @@
 package com.fp.flibustapicker.helpers
 
+import android.annotation.SuppressLint
 import android.app.Activity
-import android.util.Log
-import android.view.View
-import android.widget.LinearLayout
-import android.widget.ProgressBar
-import android.widget.TextView
-import com.fp.flibustapicker.R
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
+import com.fp.flibustapicker.viewModels.NotificationsViewModel
 import okhttp3.MediaType
 import okhttp3.ResponseBody
 import okio.*
@@ -14,7 +12,8 @@ import java.io.IOException
 
 class DownloadSpeedCounter(
     private val responseBody: ResponseBody,
-    private val activity: Activity
+    private val activity: Activity,
+    val notificationsViewModel: NotificationsViewModel
 ) : ResponseBody() {
     private val bufferedSource = initSource(responseBody.source()).buffer()
     var count = 0
@@ -42,7 +41,6 @@ class DownloadSpeedCounter(
                         progressBar(responseBody.contentLength(), totalBytesRead)
                     })
 
-                   // Log.e("end", "Total: ${responseBody.contentLength()}; ByteCount: $byteCount; Iterations: ${responseBody.contentLength() / byteCount}")
                     count += 1
                     if (bytesRead == -1L) {
                         //Log.e("end", count.toString())
@@ -55,20 +53,32 @@ class DownloadSpeedCounter(
             }
         }
 
+    @SuppressLint("MissingPermission")
     fun progressBar(fullSize: Long, bytesRead: Long) {
-//        val percentage = bytesRead / (fullSize / 100)
-//        val progressBar = activity.findViewById<ProgressBar>(R.id.progressBarSecondary)
-//        val progressBarWrapper = activity.findViewById<LinearLayout>(R.id.progressBarWrapper)
-//        val progressBarText = activity.findViewById<TextView>(R.id.textViewPrimary)
-//
-//        progressBarWrapper.visibility = View.VISIBLE
-//
-//        if(percentage == 100L) {
-//            progressBarWrapper.visibility = View.GONE
-//            return
-//        } else {
-//            progressBar.secondaryProgress = percentage.toInt()
-//            progressBarText.text = "Complete $percentage% of 100"
-//        }
+        val percentage = bytesRead / (fullSize / 100)
+
+        val notificationBuilder: NotificationCompat.Builder = notificationsViewModel.notificationBuilder
+        val notificationBuilder2: NotificationCompat.Builder = notificationsViewModel.notificationBuilder2
+        val notificationManager: NotificationManagerCompat = notificationsViewModel.notificationManager
+
+        if (percentage != 100L) {
+            notificationManager.notify(
+                3,
+                notificationBuilder2
+                    .setContentTitle("Downloading from Flibusta")
+                    .setContentText("${percentage}/${100}")
+                    .setProgress(100, percentage.toInt(), false).build()
+            )
+        } else {
+            notificationManager.notify(
+                3,
+                notificationBuilder
+                    .setContentTitle("Completed!")
+                    .setContentText("")
+                    .setContentIntent(null)
+                    .clearActions()
+                    .setProgress(0, 0, false).build()
+            )
+        }
     }
 }
