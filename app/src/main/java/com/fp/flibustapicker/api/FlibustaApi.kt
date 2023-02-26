@@ -20,10 +20,11 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.OutputStream
+import java.net.URLEncoder
 import java.util.concurrent.TimeUnit
 
 class FlibustaApi {
-    private val baseUrl = "https://flibusta.club"
+    private val baseUrl = "http://proxi.flibusta.is/"
     private val client = OkHttpClient
         .Builder()
         .connectTimeout(30, TimeUnit.SECONDS)
@@ -44,11 +45,15 @@ class FlibustaApi {
         val result = mutableListOf<BookModel>()
 
         val doc = Jsoup.connect(
-            "$baseUrl/booksearch?ask=" + bookName.replace(
-                "\\s".toRegex(),
-                "+"
-            )
+            "$baseUrl/booksearch?ask=" + URLEncoder.encode(bookName, "utf-8")
         ).get()
+
+//        "$baseUrl/booksearch?ask=" + bookName.replace(
+//            "\\s".toRegex(),
+//            "+"
+//        )
+
+        URLEncoder.encode(bookName, "utf-8")
 
         doc.select("div#main").select("li").select("a")
             .forEach { booksInSearch ->
@@ -60,30 +65,22 @@ class FlibustaApi {
                     val docInside = Jsoup.connect(
                         baseUrl + bookLink
                     ).get()
-                    docInside.select("div.b_download").select("span")
+                    docInside.select("div#main").select("a")
                         .forEach { downloadLink ->
-                            val eventRegex = "'(.*?)'".toRegex()
                             val regex = "([^\\/]+\$)".toRegex()
-                            val downloadBookLinkClear = eventRegex.find(downloadLink.attr("onclick"))?.value?.replace("'", "")
-                            val stringToFind = downloadBookLinkClear?.let { string ->
-                                regex.find(
-                                    string
-                                )?.value
-                            }
-                            if(stringToFind != null) {
-                                Log.d("e", stringToFind)
-                                when (stringToFind) {
-                                    "?format=fb2.zip" -> bookModel.fbLink = downloadBookLinkClear
-                                    "?format=txt.zip" -> bookModel.txtLink = downloadBookLinkClear
-                                    "?format=pdf" -> bookModel.pdfLink = downloadBookLinkClear
-                                    "?format=epub" -> bookModel.epubLink = downloadBookLinkClear
-                                    "?format=mobi" -> bookModel.mobiLink = downloadBookLinkClear
-                                    "?format=rtf.zip" -> bookModel.rtfLink = downloadBookLinkClear
+                            val extensionsLink = regex.find(downloadLink.attr("href"))?.value
+                            if(extensionsLink != null) {
+                                when (extensionsLink) {
+                                    "fb2" -> bookModel.fbLink = downloadLink.attr("href")
+                                    "txt" -> bookModel.txtLink = downloadLink.attr("href")
+                                    "pdf" -> bookModel.pdfLink = downloadLink.attr("href")
+                                    "epub" -> bookModel.epubLink = downloadLink.attr("href")
+                                    "mobi" -> bookModel.mobiLink = downloadLink.attr("href")
+                                    "rtf" -> bookModel.rtfLink = downloadLink.attr("href")
                                 }
                             }
                         }
 
-                    //Log.d("e", bookModel.toString())
                     result.add(bookModel)
                 }
             }
@@ -92,18 +89,27 @@ class FlibustaApi {
     }
 
     fun downloadBook(
-        downloadLink: String,
-        activity: Activity
+        downloadLink: String
     ) {
         val request = Request.Builder()
             .url("$baseUrl$downloadLink")
             .build()
 
-        val regexpExtractExtension = "[^=]*$".toRegex()
+        val regexpExtractExtension = "([^\\/]+\$)".toRegex()
 
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 e.printStackTrace()
+            }
+
+            val extensionResolver = when(regexpExtractExtension.find(downloadLink)?.value!!) {
+                "fb2" -> "fb2.zip"
+                "epub" -> "fb2.epub"
+                "mobi" -> "fb2.mobi"
+                "rtf" -> "fb2.rtf"
+                "pdf" -> "pdf"
+                "txt" -> "fb2.txt"
+                else -> "fb2.zip"
             }
 
             @RequiresApi(Build.VERSION_CODES.Q)
@@ -112,7 +118,7 @@ class FlibustaApi {
                     if (!response.isSuccessful) throw IOException("Unexpected code $response")
                     writeFile(
                         downloadLink.filter { it.isDigit() },
-                        regexpExtractExtension.find(downloadLink)?.value!!,
+                        extensionResolver,
                         response.body!!
                     )
                 }
@@ -142,7 +148,7 @@ class FlibustaApi {
                 dir = null
             }
         } else {
-            val filename = "$fileName.html"
+            val filename = "$fileName.$extension"
             val downloadedFile = File(dir, filename)
             downloadedFile.createNewFile()
 

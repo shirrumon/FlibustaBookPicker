@@ -63,73 +63,61 @@ class SearchListAdapter(
         holder.itemView.setOnClickListener { view ->
 
             item.fbLink?.let { fbLink ->
-                Log.d("e", "open")
                 val fbButton = view.findViewById<Button>(R.id.downloadFb2)
                 fbButton.visibility = View.VISIBLE
                 fbButton.setOnClickListener {
                     flibustaApi.downloadBook(
-                        fbLink,
-                        activity
+                        fbLink
                     )
                 }
             }
 
             item.mobiLink?.let { mobiLink ->
-                Log.d("e", "open")
                 val mobiButton = view.findViewById<Button>(R.id.downloadMobi)
                 mobiButton.visibility = View.VISIBLE
                 mobiButton.setOnClickListener {
                     flibustaApi.downloadBook(
-                        mobiLink,
-                        activity
+                        mobiLink
                     )
                 }
             }
 
             item.pdfLink?.let { pdfLink ->
-                Log.d("e", "open")
                 val pdfButton = view.findViewById<Button>(R.id.downloadPdf)
                 pdfButton.visibility = View.VISIBLE
                 pdfButton.setOnClickListener {
                     flibustaApi.downloadBook(
-                        pdfLink,
-                        activity
+                        pdfLink
                     )
                 }
             }
 
             item.epubLink?.let { epubLink ->
-                Log.d("e", "open")
                 val epubButton = view.findViewById<Button>(R.id.downloadEpub)
                 epubButton.visibility = View.VISIBLE
                 epubButton.setOnClickListener {
                     flibustaApi.downloadBook(
-                        epubLink,
-                        activity
+                        epubLink
                     )
                 }
             }
 
             item.txtLink?.let { txtLink ->
-                Log.d("e", "open")
                 val txtButton = view.findViewById<Button>(R.id.downloadTxt)
                 txtButton.visibility = View.VISIBLE
                 txtButton.setOnClickListener {
                     flibustaApi.downloadBook(
-                        txtLink,
-                        activity
+                        txtLink
                     )
                 }
             }
 
             item.rtfLink?.let { rtfLink ->
-                Log.d("e", "open")
                 val rtfButton = view.findViewById<Button>(R.id.downloadRtf)
                 rtfButton.visibility = View.VISIBLE
                 rtfButton.setOnClickListener {
                     flibustaApi.downloadBook(
-                        rtfLink,
-                        activity
+                        rtfLink
                     )
                 }
             }

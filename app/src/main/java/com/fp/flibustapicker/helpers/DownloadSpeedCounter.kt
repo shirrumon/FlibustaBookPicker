@@ -53,7 +53,7 @@ class DownloadSpeedCounter(
                     bytesRead = super.read(sink, byteCount)
                     totalBytesRead += if (bytesRead != -1L) bytesRead else 0
                     activity.runOnUiThread(Runnable {
-                        //progressBar(responseBody.contentLength(), totalBytesRead)
+                        progressBar(responseBody.contentLength(), totalBytesRead)
                     })
 
                     count += 1
@@ -71,18 +71,17 @@ class DownloadSpeedCounter(
     @SuppressLint("MissingPermission")
     fun progressBar(fullSize: Long, bytesRead: Long) {
         NotificationManagerCompat.from(activity).createNotificationChannel(mChannel)
-        if(fullSize != 0L) {
-            val percentage = bytesRead / (fullSize / 100)
-            val notification: Notification = NotificationCompat.Builder(activity, "Ch_1")
-                .setSmallIcon(R.drawable.baseline_notifications_24)
-                .setContentTitle("Downloading from Flibusta")
-                .setContentText("${percentage}/${100}")
-                .setProgress(100, percentage.toInt(), false)
-                .build()
+        val percentage = bytesRead / (fullSize / 100)
+        val notification: Notification = NotificationCompat.Builder(activity, "Ch_1")
+            .setSmallIcon(R.drawable.baseline_notifications_24)
+            .setContentTitle("Downloading from Flibusta")
+            .setContentText("${percentage}/${100}")
+            .setProgress(100, percentage.toInt(), false)
+            .build()
 
-            if (percentage != 101L) {
-                NotificationManagerCompat.from(activity).notify(1, notification)
-            }
+        if (percentage != 101L) {
+            NotificationManagerCompat.from(activity).notify(1, notification)
+        }
 //        } else {
 //            val notificationEnded: Notification = NotificationCompat.Builder(activity, "Ch_1")
 //                .setSmallIcon(R.drawable.baseline_notifications_24)
@@ -95,6 +94,5 @@ class DownloadSpeedCounter(
 //
 //            NotificationManagerCompat.from(activity).notify(2, notificationEnded)
 //        }
-        }
     }
 }
