@@ -1,28 +1,36 @@
 package com.fp.flibustapicker.fragments
 
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.fp.flibustapicker.R
 import com.fp.flibustapicker.adapters.SearchListAdapter
 import com.fp.flibustapicker.databinding.SearchListElementBinding
 import com.fp.flibustapicker.models.BookModel
+import com.fp.flibustapicker.viewModels.NotificationsViewModel
 import com.fp.flibustapicker.viewModels.SearchViewModel
 import com.google.android.material.chip.Chip
 import com.google.android.material.search.SearchBar
 import com.google.android.material.search.SearchView
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class SearchFragment : Fragment() {
-    private val listAdapter: SearchListAdapter = SearchListAdapter()
+    private lateinit var listAdapter: SearchListAdapter
     private lateinit var binding: SearchListElementBinding
     private var taskListEntities: List<BookModel> = arrayListOf()
-    private lateinit var searchViewModel: SearchViewModel
+    private val searchViewModel: SearchViewModel by viewModels()
+    private val notifyViewModel: NotificationsViewModel by viewModels()
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -31,7 +39,7 @@ class SearchFragment : Fragment() {
         val searchBar: SearchBar = view.findViewById(R.id.search_bar)
         val searchView: SearchView = view.findViewById(R.id.search_view)
         binding = SearchListElementBinding.inflate(inflater)
-        searchViewModel = ViewModelProvider(requireActivity())[SearchViewModel::class.java]
+        listAdapter = SearchListAdapter(requireActivity())
 
         initAdapterView(view)
 

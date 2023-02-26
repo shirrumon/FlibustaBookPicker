@@ -1,6 +1,8 @@
 package com.fp.flibustapicker
 
+import android.Manifest
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -13,7 +15,9 @@ import android.provider.Settings
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.FragmentTransaction
 import com.fp.flibustapicker.fragments.SearchFragment
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     init {
         instance = this
@@ -24,6 +28,10 @@ class MainActivity : AppCompatActivity() {
 
         fun applicationContext() : Context {
             return instance!!.applicationContext
+        }
+
+        fun getActivity() : MainActivity? {
+            return instance
         }
     }
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,6 +52,20 @@ class MainActivity : AppCompatActivity() {
                         this, arrayOf(WRITE_EXTERNAL_STORAGE), 101)
                 }
             }
+        }
+
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                102
+            )
+            return
         }
     }
 
