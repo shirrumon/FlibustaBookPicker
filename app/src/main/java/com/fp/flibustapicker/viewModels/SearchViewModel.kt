@@ -12,8 +12,8 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
-class SearchViewModel @Inject constructor(notificationsViewModel: NotificationsViewModel): ViewModel() {
-    private val repository: FlibustaApi = FlibustaApi(notificationsViewModel)
+class SearchViewModel @Inject constructor(): ViewModel() {
+    private val repository: FlibustaApi = FlibustaApi()
 
     fun searchBook(bookName: String): MutableLiveData<List<BookModel>> {
         val mutableResponse: MutableLiveData<List<BookModel>> = MutableLiveData()

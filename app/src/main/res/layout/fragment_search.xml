@@ -37,15 +37,9 @@
             android:layout_height="match_parent"
             android:hint="@string/book_name"
             app:layout_anchor="@id/search_bar">
-            <!-- Search suggestions/results go here (ScrollView, RecyclerView, etc.). -->
         </com.google.android.material.search.SearchView>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-    <Button
-        android:id="@+id/buttonId"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="bbbbbbb"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/archive_recycler"

@@ -7,6 +7,7 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.MutableLiveData
 import com.fp.flibustapicker.MainActivity.Companion.applicationContext
+import com.fp.flibustapicker.MainActivity.Companion.getActivity
 import com.fp.flibustapicker.helpers.DownloadSpeedCounter
 import com.fp.flibustapicker.models.BookModel
 import com.fp.flibustapicker.viewModels.NotificationsViewModel
@@ -21,8 +22,8 @@ import java.io.IOException
 import java.io.OutputStream
 import java.util.concurrent.TimeUnit
 
-class FlibustaApi(val notificationsViewModel: NotificationsViewModel) {
-    private val baseUrl = "https://flibusta.site"
+class FlibustaApi {
+    private val baseUrl = "https://flibusta.club"
     private val client = OkHttpClient
         .Builder()
         .connectTimeout(30, TimeUnit.SECONDS)
@@ -33,7 +34,7 @@ class FlibustaApi(val notificationsViewModel: NotificationsViewModel) {
             val originalBody = originalResponse.body
             originalBody!!.let { response ->
                 originalResponse.newBuilder()
-                    .body(DownloadSpeedCounter(response, applicationContext() as Activity, notificationsViewModel))
+                    .body(DownloadSpeedCounter(response, getActivity()!!))
                     .build()
             }
         }
@@ -59,21 +60,30 @@ class FlibustaApi(val notificationsViewModel: NotificationsViewModel) {
                     val docInside = Jsoup.connect(
                         baseUrl + bookLink
                     ).get()
-                    docInside.select("div.g-network_literature").select("a")
-                        .forEach { bookPage ->
-                            if (bookPage.attr("href").contains("/b/", ignoreCase = true)) {
-                                val regex = "([^\\/]+\$)".toRegex()
-                                when (regex.find(bookPage.attr("href"))?.value) {
-                                    "fb2" -> bookModel.fbLink = bookLink + "/fb2"
-                                    "txt" -> bookModel.txtLink = bookLink + "/txt"
-                                    "pdf" -> bookModel.pdfLink = bookLink + "/pdf"
-                                    "epub" -> bookModel.epubLink = bookLink + "/epub"
-                                    "mobi" -> bookModel.mobiLink = bookLink + "/mobi"
-                                    "rtf" -> bookModel.rtfLink = bookLink + "/rtf"
+                    docInside.select("div.b_download").select("span")
+                        .forEach { downloadLink ->
+                            val eventRegex = "'(.*?)'".toRegex()
+                            val regex = "([^\\/]+\$)".toRegex()
+                            val downloadBookLinkClear = eventRegex.find(downloadLink.attr("onclick"))?.value?.replace("'", "")
+                            val stringToFind = downloadBookLinkClear?.let { string ->
+                                regex.find(
+                                    string
+                                )?.value
+                            }
+                            if(stringToFind != null) {
+                                Log.d("e", stringToFind)
+                                when (stringToFind) {
+                                    "?format=fb2.zip" -> bookModel.fbLink = downloadBookLinkClear
+                                    "?format=txt.zip" -> bookModel.txtLink = downloadBookLinkClear
+                                    "?format=pdf" -> bookModel.pdfLink = downloadBookLinkClear
+                                    "?format=epub" -> bookModel.epubLink = downloadBookLinkClear
+                                    "?format=mobi" -> bookModel.mobiLink = downloadBookLinkClear
+                                    "?format=rtf.zip" -> bookModel.rtfLink = downloadBookLinkClear
                                 }
                             }
                         }
 
+                    //Log.d("e", bookModel.toString())
                     result.add(bookModel)
                 }
             }
@@ -81,12 +91,16 @@ class FlibustaApi(val notificationsViewModel: NotificationsViewModel) {
         return result
     }
 
-    fun downloadFb2(bookId: String, activity: Activity, extension: String) {
+    fun downloadBook(
+        downloadLink: String,
+        activity: Activity
+    ) {
         val request = Request.Builder()
-            .url("$baseUrl$bookId/$extension")
+            .url("$baseUrl$downloadLink")
             .build()
 
-        Log.d("Current url", "$baseUrl$bookId/$extension")
+        val regexpExtractExtension = "[^=]*$".toRegex()
+
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 e.printStackTrace()
@@ -94,21 +108,11 @@ class FlibustaApi(val notificationsViewModel: NotificationsViewModel) {
 
             @RequiresApi(Build.VERSION_CODES.Q)
             override fun onResponse(call: Call, response: Response) {
-                val actualExtension = when(extension) {
-                    "fb2" -> "fb2.zip"
-                    "mobi" -> "fb2.mobi"
-                    "epub" -> "fb2.epub"
-                    else -> {
-                        "pdf"
-                    }
-                }
-
                 response.use {
                     if (!response.isSuccessful) throw IOException("Unexpected code $response")
                     writeFile(
-                        bookId.filter { it.isDigit() },
-                        actualExtension,
-                        activity,
+                        downloadLink.filter { it.isDigit() },
+                        regexpExtractExtension.find(downloadLink)?.value!!,
                         response.body!!
                     )
                 }
@@ -120,17 +124,8 @@ class FlibustaApi(val notificationsViewModel: NotificationsViewModel) {
     private fun writeFile(
         fileName: String,
         extension: String,
-        activity: Activity,
         body: ResponseBody
     ) {
-//        val dir = File(activity.filesDir, "external_files")
-//        if (!dir.exists()) {
-//            dir.mkdir()
-//        }
-//        val filename: String = "$fileName.$extension" //bookId.filter { it.isDigit() }
-//        val downloadedFile = File(dir, filename)
-//        downloadedFile.createNewFile()
-
         var dir: File? = null
         dir = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             File(
@@ -147,7 +142,7 @@ class FlibustaApi(val notificationsViewModel: NotificationsViewModel) {
                 dir = null
             }
         } else {
-            val filename = "$fileName.$extension"
+            val filename = "$fileName.html"
             val downloadedFile = File(dir, filename)
             downloadedFile.createNewFile()
 
@@ -166,8 +161,6 @@ class FlibustaApi(val notificationsViewModel: NotificationsViewModel) {
 
             fos.flush()
             fos.close()
-
-            //FileProvider.getUriForFile(activity, "com.example.fileprovider", dir)
         }
     }
 }

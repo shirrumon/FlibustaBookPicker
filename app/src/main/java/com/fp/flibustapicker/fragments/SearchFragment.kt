@@ -9,7 +9,6 @@ import android.widget.Button
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.fp.flibustapicker.R
@@ -40,7 +39,7 @@ class SearchFragment : Fragment() {
         val searchBar: SearchBar = view.findViewById(R.id.search_bar)
         val searchView: SearchView = view.findViewById(R.id.search_view)
         binding = SearchListElementBinding.inflate(inflater)
-        listAdapter = SearchListAdapter(notifyViewModel)
+        listAdapter = SearchListAdapter(requireActivity())
 
         initAdapterView(view)
 
@@ -52,10 +51,6 @@ class SearchFragment : Fragment() {
                 searchView.hide()
                 true
             }
-
-        view.findViewById<Button>(R.id.buttonId).setOnClickListener {
-            notifyViewModel.showProgress()
-        }
 
         return view
     }
