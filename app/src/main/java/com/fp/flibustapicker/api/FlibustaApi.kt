@@ -1,19 +1,11 @@
 package com.fp.flibustapicker.api
 
-import android.app.Activity
 import android.os.Build
 import android.os.Environment
-import android.util.Log
 import androidx.annotation.RequiresApi
-import androidx.lifecycle.MutableLiveData
-import com.fp.flibustapicker.MainActivity.Companion.applicationContext
 import com.fp.flibustapicker.MainActivity.Companion.getActivity
 import com.fp.flibustapicker.helpers.DownloadSpeedCounter
 import com.fp.flibustapicker.models.BookModel
-import com.fp.flibustapicker.viewModels.NotificationsViewModel
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
 import okhttp3.*
 import org.jsoup.Jsoup
 import java.io.File
@@ -24,7 +16,6 @@ import java.net.URLEncoder
 import java.util.concurrent.TimeUnit
 
 class FlibustaApi {
-    private val baseUrl = "http://proxi.flibusta.is/"
     private val client = OkHttpClient
         .Builder()
         .connectTimeout(30, TimeUnit.SECONDS)
@@ -45,13 +36,8 @@ class FlibustaApi {
         val result = mutableListOf<BookModel>()
 
         val doc = Jsoup.connect(
-            "$baseUrl/booksearch?ask=" + URLEncoder.encode(bookName, "utf-8")
+            "$BASE_URL/booksearch?ask=" + URLEncoder.encode(bookName, "utf-8")
         ).get()
-
-//        "$baseUrl/booksearch?ask=" + bookName.replace(
-//            "\\s".toRegex(),
-//            "+"
-//        )
 
         URLEncoder.encode(bookName, "utf-8")
 
@@ -61,25 +47,10 @@ class FlibustaApi {
                     val bookArticle = Jsoup.parse(booksInSearch.html()).text()
                     val bookLink = booksInSearch.attr("href")
 
-                    val bookModel = BookModel(bookArticle)
-                    val docInside = Jsoup.connect(
-                        baseUrl + bookLink
-                    ).get()
-                    docInside.select("div#main").select("a")
-                        .forEach { downloadLink ->
-                            val regex = "([^\\/]+\$)".toRegex()
-                            val extensionsLink = regex.find(downloadLink.attr("href"))?.value
-                            if(extensionsLink != null) {
-                                when (extensionsLink) {
-                                    "fb2" -> bookModel.fbLink = downloadLink.attr("href")
-                                    "txt" -> bookModel.txtLink = downloadLink.attr("href")
-                                    "pdf" -> bookModel.pdfLink = downloadLink.attr("href")
-                                    "epub" -> bookModel.epubLink = downloadLink.attr("href")
-                                    "mobi" -> bookModel.mobiLink = downloadLink.attr("href")
-                                    "rtf" -> bookModel.rtfLink = downloadLink.attr("href")
-                                }
-                            }
-                        }
+                    val bookModel = BookModel(
+                        bookArticle,
+                        bookLink.filter { it.isDigit() }.toInt()
+                    )
 
                     result.add(bookModel)
                 }
@@ -92,7 +63,7 @@ class FlibustaApi {
         downloadLink: String
     ) {
         val request = Request.Builder()
-            .url("$baseUrl$downloadLink")
+            .url("$BASE_URL$downloadLink")
             .build()
 
         val regexpExtractExtension = "([^\\/]+\$)".toRegex()
@@ -102,7 +73,7 @@ class FlibustaApi {
                 e.printStackTrace()
             }
 
-            val extensionResolver = when(regexpExtractExtension.find(downloadLink)?.value!!) {
+            val extensionResolver = when (regexpExtractExtension.find(downloadLink)?.value!!) {
                 "fb2" -> "fb2.zip"
                 "epub" -> "fb2.epub"
                 "mobi" -> "fb2.mobi"
@@ -168,5 +139,30 @@ class FlibustaApi {
             fos.flush()
             fos.close()
         }
+    }
+
+    fun getBookPage(bookId: Int) {
+        val docInside = Jsoup.connect(
+            "$BASE_URL/b/$bookId"
+        ).get()
+        docInside.select("div#main").select("a")
+            .forEach { downloadLink ->
+                val regex = "([^\\/]+\$)".toRegex()
+                val extensionsLink = regex.find(downloadLink.attr("href"))?.value
+                if (extensionsLink != null) {
+//                    when (extensionsLink) {
+//                        "fb2" -> bookModel.fbLink = downloadLink.attr("href")
+//                        "txt" -> bookModel.txtLink = downloadLink.attr("href")
+//                        "pdf" -> bookModel.pdfLink = downloadLink.attr("href")
+//                        "epub" -> bookModel.epubLink = downloadLink.attr("href")
+//                        "mobi" -> bookModel.mobiLink = downloadLink.attr("href")
+//                        "rtf" -> bookModel.rtfLink = downloadLink.attr("href")
+//                    }
+                }
+            }
+    }
+
+    companion object {
+        const val BASE_URL = "http://proxi.flibusta.is/"
     }
 }

@@ -27,7 +27,7 @@ class SearchFragment : Fragment() {
     private lateinit var listAdapter: SearchListAdapter
     private lateinit var binding: SearchListElementBinding
     private var taskListEntities: List<BookModel> = arrayListOf()
-    private val searchViewModel: SearchViewModel by viewModels()
+    private val searchViewModel: SearchViewModel = SearchViewModel()
     private val notifyViewModel: NotificationsViewModel by viewModels()
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
