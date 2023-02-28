@@ -5,123 +5,123 @@
     android:layout_height="match_parent"
     tools:context=".fragments.BookPageFragment">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:layout_margin="15dp"
-        android:scrollbars="vertical">
-        <TextView
-            android:id="@+id/bookName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text=""
-            android:textSize="25sp" />
-
-        <TextView
-            android:id="@+id/bookAuthor"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text=""
-            android:textSize="20sp"
-            android:layout_marginTop="5dp"/>
+        android:layout_margin="15dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="5dp">
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/bookName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textSize="25sp" />
+
+            <TextView
+                android:id="@+id/bookAuthor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text=""
+                android:textSize="20sp" />
+
             <ImageView
                 android:id="@+id/bookImage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-            </ImageView>
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/book_image_desc"
+                android:maxHeight="300dp"
+                android:maxWidth="400dp"
+                android:scaleType="centerInside"
+                android:adjustViewBounds="true"/>
+
             <TextView
                 android:id="@+id/bookDescription"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text=""
-                android:textSize="15sp"
                 android:layout_marginStart="15dp"
-                />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/downloadButtonLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:layout_marginTop="15dp">
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center">
-                <Button
-                    style="@style/Widget.Material3.Button"
-                    android:id="@+id/downloadFb2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Fb2"
-                    android:visibility="gone"
-                    android:layout_margin="5dp"
-                    />
-
-                <Button
-                    style="@style/Widget.Material3.Button"
-                    android:id="@+id/downloadEpub"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="epub"
-                    android:visibility="gone"
-                    android:layout_margin="5dp"
-                    />
-
-                <Button
-                    style="@style/Widget.Material3.Button"
-                    android:id="@+id/downloadMobi"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="mobi"
-                    android:visibility="gone"
-                    android:layout_margin="5dp"
-                    />
-            </LinearLayout>
+                android:text=""
+                android:textSize="15sp" />
 
             <LinearLayout
+                android:id="@+id/downloadButtonLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center">
-                <Button
-                    style="@style/Widget.Material3.Button"
-                    android:id="@+id/downloadPdf"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="PDF"
-                    android:visibility="gone"
-                    android:layout_margin="5dp"
-                    />
+                android:layout_marginTop="15dp"
+                android:gravity="center"
+                android:orientation="vertical">
 
-                <Button
-                    style="@style/Widget.Material3.Button"
-                    android:id="@+id/downloadTxt"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="TXT"
-                    android:visibility="gone"
-                    android:layout_margin="5dp"
-                    />
+                    android:gravity="center">
 
-                <Button
-                    style="@style/Widget.Material3.Button"
-                    android:id="@+id/downloadRtf"
-                    android:layout_width="wrap_content"
+                    <Button
+                        android:id="@+id/downloadFb2"
+                        style="@style/Widget.Material3.Button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="5dp"
+                        android:text="Fb2"
+                        android:visibility="gone" />
+
+                    <Button
+                        android:id="@+id/downloadEpub"
+                        style="@style/Widget.Material3.Button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="5dp"
+                        android:text="epub"
+                        android:visibility="gone" />
+
+                    <Button
+                        android:id="@+id/downloadMobi"
+                        style="@style/Widget.Material3.Button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="5dp"
+                        android:text="mobi"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="RTF"
-                    android:visibility="gone"
-                    android:layout_margin="5dp"
-                    />
+                    android:gravity="center">
+
+                    <Button
+                        android:id="@+id/downloadPdf"
+                        style="@style/Widget.Material3.Button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="5dp"
+                        android:text="PDF"
+                        android:visibility="gone" />
+
+                    <Button
+                        android:id="@+id/downloadTxt"
+                        style="@style/Widget.Material3.Button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="5dp"
+                        android:text="TXT"
+                        android:visibility="gone" />
+
+                    <Button
+                        android:id="@+id/downloadRtf"
+                        style="@style/Widget.Material3.Button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="5dp"
+                        android:text="RTF"
+                        android:visibility="gone" />
+                </LinearLayout>
             </LinearLayout>
         </LinearLayout>
-    </LinearLayout>
+    </ScrollView>
 </FrameLayout>

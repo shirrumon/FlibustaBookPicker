@@ -10,6 +10,8 @@ import android.widget.Button
 import android.widget.LinearLayout
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentTransaction
+import androidx.navigation.Navigation.findNavController
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -18,7 +20,7 @@ import com.fp.flibustapicker.api.FlibustaApi
 import com.fp.flibustapicker.databinding.SearchListElementBinding
 import com.fp.flibustapicker.fragments.BookPageFragment
 import com.fp.flibustapicker.models.BookModel
-import com.fp.flibustapicker.viewModels.NotificationsViewModel
+import com.google.gson.Gson
 
 class SearchListAdapter(
     private val activity: FragmentActivity
@@ -62,17 +64,15 @@ class SearchListAdapter(
     }
 
     override fun onBindViewHolder(holder: MainViewHolder, position: Int) {
-        val item = getItem(position)
-        holder.bind(item)
+        val book = getItem(position)
+        holder.bind(book)
         holder.itemView.setOnClickListener {
-            val bookPageFragment = BookPageFragment(item)
+            val bookPageFragment = BookPageFragment()
+            val bundle = Bundle()
+            bundle.putString("bookModel", Gson().toJson(book))
+            bookPageFragment.arguments = bundle
 
-            activity.supportFragmentManager
-                .beginTransaction()
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                .replace(R.id.fragment_container, bookPageFragment)
-                .addToBackStack(null)
-                .commit()
+            activity.findNavController(R.id.nav_host_fragment).navigate(R.id.bookPageFragment, bundle)
         }
     }
 }

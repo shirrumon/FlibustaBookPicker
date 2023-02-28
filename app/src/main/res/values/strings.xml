@@ -5,4 +5,5 @@
     <string name="find_label">Find book in flibusta</string>
     <string name="book_name">...book name</string>
     <string name="was_founded_nothing">Was founded nothing</string>
+    <string name="book_image_desc">bookImage</string>
 </resources>

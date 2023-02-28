@@ -2,7 +2,7 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
-    id 'dagger.hilt.android.plugin'
+    //id 'dagger.hilt.android.plugin'
 }
 
 android {
@@ -38,16 +38,16 @@ android {
     }
 }
 def lifecycle_version = "2.5.1"
-def arch_version = "2.1.0"
 def daggerVersion = "2.45"
 def activity_version = "1.6.1"
 def fragment_version = "1.5.5"
+def nav_version = "2.5.3"
 dependencies {
-    implementation("com.google.dagger:dagger:$daggerVersion")
-    kapt("com.google.dagger:dagger-compiler:$daggerVersion")
-
-    implementation("com.google.dagger:hilt-android:$daggerVersion")
-    kapt("com.google.dagger:hilt-compiler:$daggerVersion")
+//    implementation("com.google.dagger:dagger:$daggerVersion")
+//    kapt("com.google.dagger:dagger-compiler:$daggerVersion")
+//
+//    implementation("com.google.dagger:hilt-android:$daggerVersion")
+//    kapt("com.google.dagger:hilt-compiler:$daggerVersion")
 
     implementation 'androidx.core:core-ktx:1.9.0'
     implementation 'androidx.appcompat:appcompat:1.6.1'
@@ -67,17 +67,14 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:$lifecycle_version"
 
-    //noinspection LifecycleAnnotationProcessorWithJava8
-    kapt "androidx.lifecycle:lifecycle-compiler:$lifecycle_version"
-    implementation "androidx.lifecycle:lifecycle-common-java8:$lifecycle_version"
-    implementation "androidx.lifecycle:lifecycle-service:$lifecycle_version"
-    implementation "androidx.lifecycle:lifecycle-process:$lifecycle_version"
-    implementation "androidx.lifecycle:lifecycle-reactivestreams-ktx:$lifecycle_version"
-    testImplementation "androidx.arch.core:core-testing:$arch_version"
-    testImplementation "androidx.lifecycle:lifecycle-runtime-testing:$lifecycle_version"
-
     implementation "androidx.activity:activity-ktx:$activity_version"
     implementation "androidx.fragment:fragment-ktx:$fragment_version"
 
-    implementation "com.squareup.picasso:picasso:2.71828"
+    implementation "com.google.code.gson:gson:2.10.1"
+
+    implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
+    implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
+    implementation "androidx.navigation:navigation-dynamic-features-fragment:$nav_version"
+
+    implementation "io.coil-kt:coil:2.2.2"
 }
