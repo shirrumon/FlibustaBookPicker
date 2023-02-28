@@ -13,12 +13,16 @@ import org.jsoup.Jsoup
 
 class SearchViewModel : ViewModel() {
     private val repository: FlibustaApi = FlibustaApi()
+    var responseFromBookSearchSaved: List<BookModel> = listOf()
+    var responseBookPageSaved: BookModel? = null
 
     fun searchBook(bookName: String): MutableLiveData<List<BookModel>> {
         val mutableResponse: MutableLiveData<List<BookModel>> = MutableLiveData()
         viewModelScope.launch {
             withContext(Dispatchers.Default) {
-                mutableResponse.postValue(repository.findBooksByName(bookName))
+                val findBooks = repository.findBooksByName(bookName)
+                responseFromBookSearchSaved = findBooks
+                mutableResponse.postValue(findBooks)
             }
         }
 
@@ -67,7 +71,7 @@ class SearchViewModel : ViewModel() {
                             book.bookDescription = description.text()
                         }
                     }
-
+                responseBookPageSaved = book
                 bookComplexity.postValue(book)
             }
         }

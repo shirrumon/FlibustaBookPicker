@@ -18,7 +18,7 @@ import com.fp.flibustapicker.api.FlibustaApi
 import com.fp.flibustapicker.databinding.SearchListElementBinding
 import com.fp.flibustapicker.fragments.BookPageFragment
 import com.fp.flibustapicker.models.BookModel
-import com.fp.flibustapicker.viewModels.NotificationsViewModel
+import com.google.gson.Gson
 
 class SearchListAdapter(
     private val activity: FragmentActivity
@@ -65,7 +65,10 @@ class SearchListAdapter(
         val item = getItem(position)
         holder.bind(item)
         holder.itemView.setOnClickListener {
-            val bookPageFragment = BookPageFragment(item)
+            val bookPageFragment = BookPageFragment()
+            val bundle = Bundle()
+            bundle.putString("bookModel", Gson().toJson(item))
+            bookPageFragment.arguments = bundle
 
             activity.supportFragmentManager
                 .beginTransaction()

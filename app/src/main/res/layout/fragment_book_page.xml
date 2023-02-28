@@ -34,7 +34,9 @@
             <ImageView
                 android:id="@+id/bookImage"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:maxWidth="30dp"
+                android:maxHeight="50dp">
             </ImageView>
             <TextView
                 android:id="@+id/bookDescription"
