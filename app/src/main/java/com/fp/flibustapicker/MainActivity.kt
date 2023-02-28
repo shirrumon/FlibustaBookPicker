@@ -12,11 +12,7 @@ import android.os.Bundle
 import android.os.Environment
 import android.provider.Settings
 import androidx.core.app.ActivityCompat
-import androidx.fragment.app.FragmentTransaction
-import com.fp.flibustapicker.fragments.SearchFragment
-import dagger.hilt.android.AndroidEntryPoint
 
-@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     init {
         instance = this

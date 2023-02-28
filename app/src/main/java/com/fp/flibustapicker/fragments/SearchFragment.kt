@@ -18,9 +18,7 @@ import com.fp.flibustapicker.viewModels.SearchViewModel
 import com.google.android.material.chip.Chip
 import com.google.android.material.search.SearchBar
 import com.google.android.material.search.SearchView
-import dagger.hilt.android.AndroidEntryPoint
 
-@AndroidEntryPoint
 class SearchFragment : Fragment() {
     private lateinit var listAdapter: SearchListAdapter
     private lateinit var binding: SearchListElementBinding
@@ -44,9 +42,9 @@ class SearchFragment : Fragment() {
         searchView
             .editText
             .setOnEditorActionListener { v, actionId, event ->
-                loadBooksList(view, searchView.text.toString(), searchViewModel)
                 searchBar.text = searchView.text
                 searchView.hide()
+                loadBooksList(view, searchView.text.toString(), searchViewModel)
                 true
             }
 
