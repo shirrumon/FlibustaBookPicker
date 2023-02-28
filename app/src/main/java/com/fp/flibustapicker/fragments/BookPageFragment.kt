@@ -6,8 +6,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.lifecycle.ViewModelProvider
+import coil.load
+import coil.size.Scale
 import com.fp.flibustapicker.R
 import com.fp.flibustapicker.api.FlibustaApi
 import com.fp.flibustapicker.models.BookModel
@@ -46,7 +49,10 @@ class BookPageFragment : Fragment() {
         view.findViewById<TextView>(R.id.bookAuthor).text = book.bookAuthor
         view.findViewById<TextView>(R.id.bookDescription).text = book.bookDescription
 
-        //Picasso.get().load(book.bookImage).into(view.findViewById<ImageView>(R.id.bookImage))
+        view.findViewById<ImageView>(R.id.bookImage).load(book.bookImage) {
+            crossfade(750)
+            scale(Scale.FILL)
+        }
 
         book.fbLink?.let { fbLink ->
             val fbButton = view.findViewById<Button>(R.id.downloadFb2)
