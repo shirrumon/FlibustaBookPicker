@@ -2,9 +2,6 @@ package com.fp.flibustapicker.helpers
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.app.Notification
-import android.graphics.Color
-import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.fp.flibustapicker.R
@@ -15,14 +12,13 @@ import java.io.IOException
 
 class DownloadSpeedCounter(
     private val responseBody: ResponseBody,
-    private val activity: Activity
+    activity: Activity
 ) : ResponseBody() {
-    private val mChannel = NotificationChannelCompat.Builder("Ch_1", NotificationManagerCompat.IMPORTANCE_DEFAULT).apply {
-        setName("channel name")
-        setDescription("channel description")
-        setLightsEnabled(true)
-        setLightColor(Color.RED)
-    }.build()
+    private val notificationManager: NotificationManagerCompat =
+        NotificationManagerCompat.from(activity)
+
+    private val notificationBuilder: NotificationCompat.Builder =
+        NotificationCompat.Builder(activity, "ch#1")
 
     private val bufferedSource = initSource(responseBody.source()).buffer()
     var count = 0
@@ -41,18 +37,33 @@ class DownloadSpeedCounter(
         object : ForwardingSource(source) {
             var totalBytesRead: Long = 0L
 
+            @SuppressLint("MissingPermission")
             override fun read(sink: Buffer, byteCount: Long): Long {
                 var bytesRead = 0L
                 try {
                     bytesRead = super.read(sink, byteCount)
                     totalBytesRead += if (bytesRead != -1L) bytesRead else 0
-                    activity.runOnUiThread(Runnable {
-                        progressBar(responseBody.contentLength(), totalBytesRead)
-                    })
+                    val percentage = totalBytesRead / (responseBody.contentLength() / 100)
+                    notificationManager.notify(
+                        3, notificationBuilder
+                            .setSmallIcon(R.drawable.baseline_notifications_24)
+                            .setContentTitle("Downloading from Flibusta")
+                            .setContentText("${percentage}/${100}")
+                            .setProgress(100, percentage.toInt(), false).build()
+                    )
 
                     count += 1
                     if (bytesRead == -1L) {
-                        //Log.e("end", count.toString())
+                        notificationManager.cancel(3)
+                        notificationManager.notify(
+                            4, notificationBuilder
+                                .setSmallIcon(R.drawable.baseline_notifications_24)
+                                .setContentTitle("Completed!")
+                                .setContentText("")
+                                .setContentIntent(null)
+                                .clearActions()
+                                .setProgress(0, 0, false).build()
+                        )
                     }
 
                 } catch (e: Exception) {
@@ -61,32 +72,4 @@ class DownloadSpeedCounter(
                 return bytesRead
             }
         }
-
-    @SuppressLint("MissingPermission")
-    fun progressBar(fullSize: Long, bytesRead: Long) {
-        NotificationManagerCompat.from(activity).createNotificationChannel(mChannel)
-        val percentage = bytesRead / (fullSize / 100)
-        val notification: Notification = NotificationCompat.Builder(activity, "Ch_1")
-            .setSmallIcon(R.drawable.baseline_notifications_24)
-            .setContentTitle("Downloading from Flibusta")
-            .setContentText("${percentage}/${100}")
-            .setProgress(100, percentage.toInt(), false)
-            .build()
-
-        if (percentage != 101L) {
-            NotificationManagerCompat.from(activity).notify(1, notification)
-        }
-//        } else {
-//            val notificationEnded: Notification = NotificationCompat.Builder(activity, "Ch_1")
-//                .setSmallIcon(R.drawable.baseline_notifications_24)
-//                .setContentTitle("Completed!")
-//                .setContentText("")
-//                .setContentIntent(null)
-//                .clearActions()
-//                .setProgress(0, 0, false)
-//                .build()
-//
-//            NotificationManagerCompat.from(activity).notify(2, notificationEnded)
-//        }
-    }
 }

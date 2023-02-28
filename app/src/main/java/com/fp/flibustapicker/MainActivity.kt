@@ -21,31 +21,34 @@ class MainActivity : AppCompatActivity() {
     companion object {
         private var instance: MainActivity? = null
 
-        fun applicationContext() : Context {
+        fun applicationContext(): Context {
             return instance!!.applicationContext
         }
 
-        fun getActivity() : MainActivity? {
+        fun getActivity(): MainActivity? {
             return instance
         }
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             if (!Environment.isExternalStorageManager()) {
                 val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
-                val uri: Uri = Uri.fromParts("package", packageName, null)
-                intent.data = uri
+                intent.data = Uri.fromParts("package", packageName, null)
                 startActivity(intent)
             }
         } else {
-            if(Build.VERSION.SDK_INT < Build.VERSION_CODES.R){
-                if(ActivityCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(
-                        this, arrayOf(WRITE_EXTERNAL_STORAGE), 101)
-                }
+            if (ActivityCompat.checkSelfPermission(
+                    this,
+                    WRITE_EXTERNAL_STORAGE
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                ActivityCompat.requestPermissions(
+                    this, arrayOf(WRITE_EXTERNAL_STORAGE), 101
+                )
             }
         }
 
