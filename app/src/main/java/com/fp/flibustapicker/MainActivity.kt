@@ -67,12 +67,4 @@ class MainActivity : AppCompatActivity() {
             return
         }
     }
-
-    override fun onStart() {
-        super.onStart()
-        val transaction = supportFragmentManager.beginTransaction()
-        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-        transaction.replace(R.id.fragment_container, SearchFragment())
-        transaction.commit()
-    }
 }

@@ -42,6 +42,7 @@ def arch_version = "2.1.0"
 def daggerVersion = "2.45"
 def activity_version = "1.6.1"
 def fragment_version = "1.5.5"
+def nav_version = "2.5.3"
 dependencies {
     implementation("com.google.dagger:dagger:$daggerVersion")
     kapt("com.google.dagger:dagger-compiler:$daggerVersion")
@@ -82,4 +83,8 @@ dependencies {
     implementation "com.squareup.picasso:picasso:2.71828"
 
     implementation "com.google.code.gson:gson:2.10.1"
+
+    implementation("androidx.navigation:navigation-fragment-ktx:$nav_version")
+    implementation("androidx.navigation:navigation-ui-ktx:$nav_version")
+    implementation("androidx.navigation:navigation-dynamic-features-fragment:$nav_version")
 }

@@ -10,6 +10,8 @@ import android.widget.Button
 import android.widget.LinearLayout
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentTransaction
+import androidx.navigation.Navigation.findNavController
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -70,12 +72,7 @@ class SearchListAdapter(
             bundle.putString("bookModel", Gson().toJson(item))
             bookPageFragment.arguments = bundle
 
-            activity.supportFragmentManager
-                .beginTransaction()
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-                .replace(R.id.fragment_container, bookPageFragment)
-                .addToBackStack(null)
-                .commit()
+            activity.findNavController(R.id.nav_host_fragment).navigate(R.id.bookPageFragment, bundle)
         }
     }
 }
