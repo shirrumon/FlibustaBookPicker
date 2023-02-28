@@ -64,12 +64,12 @@ class SearchListAdapter(
     }
 
     override fun onBindViewHolder(holder: MainViewHolder, position: Int) {
-        val item = getItem(position)
-        holder.bind(item)
+        val book = getItem(position)
+        holder.bind(book)
         holder.itemView.setOnClickListener {
             val bookPageFragment = BookPageFragment()
             val bundle = Bundle()
-            bundle.putString("bookModel", Gson().toJson(item))
+            bundle.putString("bookModel", Gson().toJson(book))
             bookPageFragment.arguments = bundle
 
             activity.findNavController(R.id.nav_host_fragment).navigate(R.id.bookPageFragment, bundle)

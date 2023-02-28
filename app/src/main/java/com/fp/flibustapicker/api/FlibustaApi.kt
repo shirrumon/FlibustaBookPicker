@@ -1,17 +1,14 @@
 package com.fp.flibustapicker.api
 
 import android.os.Build
-import android.os.Environment
 import androidx.annotation.RequiresApi
 import com.fp.flibustapicker.MainActivity.Companion.getActivity
 import com.fp.flibustapicker.helpers.DownloadSpeedCounter
 import com.fp.flibustapicker.models.BookModel
+import com.fp.flibustapicker.utils.FileUtils
 import okhttp3.*
 import org.jsoup.Jsoup
-import java.io.File
-import java.io.FileOutputStream
 import java.io.IOException
-import java.io.OutputStream
 import java.net.URLEncoder
 import java.util.concurrent.TimeUnit
 
@@ -19,7 +16,7 @@ class FlibustaApi {
     private val client = OkHttpClient
         .Builder()
         .connectTimeout(30, TimeUnit.SECONDS)
-        .readTimeout(2800, TimeUnit.SECONDS)
+        .readTimeout(180, TimeUnit.SECONDS)
         .writeTimeout(30, TimeUnit.SECONDS)
         .addNetworkInterceptor { chain ->
             val originalResponse = chain.proceed(chain.request())
@@ -87,7 +84,7 @@ class FlibustaApi {
             override fun onResponse(call: Call, response: Response) {
                 response.use {
                     if (!response.isSuccessful) throw IOException("Unexpected code $response")
-                    writeFile(
+                    FileUtils().writeFile(
                         downloadLink.filter { it.isDigit() },
                         extensionResolver,
                         response.body!!
@@ -95,50 +92,6 @@ class FlibustaApi {
                 }
             }
         })
-    }
-
-    @RequiresApi(Build.VERSION_CODES.Q)
-    private fun writeFile(
-        fileName: String,
-        extension: String,
-        body: ResponseBody
-    ) {
-        var dir: File? = null
-        dir = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            File(
-                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS + "/Books")
-                    .toString()
-            )
-        } else {
-            File(Environment.getExternalStorageDirectory().toString() + "/Books")
-        }
-
-        if (!dir.exists()) {
-            val success = dir.mkdirs()
-            if (!success) {
-                dir = null
-            }
-        } else {
-            val filename = "$fileName.$extension"
-            val downloadedFile = File(dir, filename)
-            downloadedFile.createNewFile()
-
-            val inputStream = body.byteStream()
-            val fileReader = ByteArray(4096)
-            var sizeOfDownloaded = 0
-            val fos: OutputStream = FileOutputStream(downloadedFile)
-
-            do {
-                val read = inputStream.read(fileReader)
-                if (read != -1) {
-                    fos.write(fileReader, 0, read)
-                    sizeOfDownloaded += read
-                }
-            } while (read != -1)
-
-            fos.flush()
-            fos.close()
-        }
     }
 
     companion object {
