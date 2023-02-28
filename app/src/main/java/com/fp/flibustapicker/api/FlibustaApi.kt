@@ -141,27 +141,6 @@ class FlibustaApi {
         }
     }
 
-    fun getBookPage(bookId: Int) {
-        val docInside = Jsoup.connect(
-            "$BASE_URL/b/$bookId"
-        ).get()
-        docInside.select("div#main").select("a")
-            .forEach { downloadLink ->
-                val regex = "([^\\/]+\$)".toRegex()
-                val extensionsLink = regex.find(downloadLink.attr("href"))?.value
-                if (extensionsLink != null) {
-//                    when (extensionsLink) {
-//                        "fb2" -> bookModel.fbLink = downloadLink.attr("href")
-//                        "txt" -> bookModel.txtLink = downloadLink.attr("href")
-//                        "pdf" -> bookModel.pdfLink = downloadLink.attr("href")
-//                        "epub" -> bookModel.epubLink = downloadLink.attr("href")
-//                        "mobi" -> bookModel.mobiLink = downloadLink.attr("href")
-//                        "rtf" -> bookModel.rtfLink = downloadLink.attr("href")
-//                    }
-                }
-            }
-    }
-
     companion object {
         const val BASE_URL = "http://proxi.flibusta.is/"
     }

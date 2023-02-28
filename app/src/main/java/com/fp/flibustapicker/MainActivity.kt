@@ -2,7 +2,6 @@ package com.fp.flibustapicker
 
 import android.Manifest
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager

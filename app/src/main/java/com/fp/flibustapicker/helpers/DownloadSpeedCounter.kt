@@ -3,19 +3,13 @@ package com.fp.flibustapicker.helpers
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Notification
-import android.app.NotificationManager
-import android.content.Context.NOTIFICATION_SERVICE
 import android.graphics.Color
-import android.util.Log
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.ContextCompat.getSystemService
-import com.fp.flibustapicker.MainActivity.Companion.applicationContext
 import com.fp.flibustapicker.R
 import okhttp3.MediaType
 import okhttp3.ResponseBody
-import okhttp3.internal.notify
 import okio.*
 import java.io.IOException
 
@@ -24,7 +18,7 @@ class DownloadSpeedCounter(
     private val activity: Activity
 ) : ResponseBody() {
     private val mChannel = NotificationChannelCompat.Builder("Ch_1", NotificationManagerCompat.IMPORTANCE_DEFAULT).apply {
-        setName("channel name") // Must set! Don't remove
+        setName("channel name")
         setDescription("channel description")
         setLightsEnabled(true)
         setLightColor(Color.RED)
