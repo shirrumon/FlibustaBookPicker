@@ -2,6 +2,11 @@ package com.fp.flibustapicker.helpers
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.graphics.Color
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.fp.flibustapicker.R
@@ -14,6 +19,15 @@ class DownloadSpeedCounter(
     private val responseBody: ResponseBody,
     activity: Activity
 ) : ResponseBody() {
+    @RequiresApi(Build.VERSION_CODES.O)
+    private val channel = NotificationChannel(
+        "ch#1",
+        "downloadsNotify",
+        NotificationManager.IMPORTANCE_DEFAULT
+    ).apply {
+        lightColor = Color.BLUE
+        enableLights(true)
+    }
     private val notificationManager: NotificationManagerCompat =
         NotificationManagerCompat.from(activity)
 
@@ -37,6 +51,7 @@ class DownloadSpeedCounter(
         object : ForwardingSource(source) {
             var totalBytesRead: Long = 0L
 
+            @RequiresApi(Build.VERSION_CODES.O)
             @SuppressLint("MissingPermission")
             override fun read(sink: Buffer, byteCount: Long): Long {
                 var bytesRead = 0L
@@ -44,6 +59,7 @@ class DownloadSpeedCounter(
                     bytesRead = super.read(sink, byteCount)
                     totalBytesRead += if (bytesRead != -1L) bytesRead else 0
                     val percentage = totalBytesRead / (responseBody.contentLength() / 100)
+                    notificationManager.createNotificationChannel(channel)
                     notificationManager.notify(
                         3, notificationBuilder
                             .setSmallIcon(R.drawable.baseline_notifications_24)
