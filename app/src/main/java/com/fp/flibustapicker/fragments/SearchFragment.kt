@@ -1,11 +1,9 @@
 package com.fp.flibustapicker.fragments
 
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -24,16 +22,22 @@ class SearchFragment : Fragment() {
     private lateinit var binding: SearchListElementBinding
     private var taskListEntities: List<BookModel> = arrayListOf()
 
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val searchViewModel = ViewModelProvider(requireActivity())[SearchViewModel::class.java]
         val view = inflater.inflate(R.layout.fragment_search, container, false)
+        initFragment(view)
+
+        return view
+    }
+
+    private fun initFragment(view: View) {
+        val searchViewModel = ViewModelProvider(requireActivity())[SearchViewModel::class.java]
+
         val searchBar: SearchBar = view.findViewById(R.id.search_bar)
         val searchView: SearchView = view.findViewById(R.id.search_view)
-        binding = SearchListElementBinding.inflate(inflater)
+        binding = SearchListElementBinding.inflate(this.layoutInflater)
         listAdapter = SearchListAdapter(requireActivity())
 
 
@@ -41,21 +45,20 @@ class SearchFragment : Fragment() {
 
         searchView
             .editText
-            .setOnEditorActionListener { v, actionId, event ->
+            .setOnEditorActionListener { _, _, _ ->
                 searchBar.text = searchView.text
                 searchView.hide()
                 loadBooksList(view, searchView.text.toString(), searchViewModel)
                 true
             }
-
-        return view
     }
 
     private fun initAdapterView(view: View?, searchViewModel: SearchViewModel) = with(binding) {
-        val recyclerView: RecyclerView = view?.findViewById(R.id.archive_recycler)!!
-        recyclerView.layoutManager =
-            LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
-        recyclerView.adapter = listAdapter
+        view?.findViewById<RecyclerView>(R.id.archive_recycler)?.apply {
+            layoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
+            adapter = listAdapter
+        }
+
         listAdapter.submitList(searchViewModel.responseFromBookSearchSaved)
     }
 

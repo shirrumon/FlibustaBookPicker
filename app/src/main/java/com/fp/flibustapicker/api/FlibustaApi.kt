@@ -56,6 +56,49 @@ class FlibustaApi {
         return result
     }
 
+    fun getBookPage(book: BookModel): BookModel {
+        val docInside = Jsoup.connect(
+            "${BASE_URL}/b/${book.bookId}"
+        ).get()
+        docInside.select("div#main").select("a")
+            .forEach { downloadLink ->
+                if(downloadLink.attr("href").contains("/a/")) {
+                    if (downloadLink.parent()?.attr("id").equals("main")) {
+                        book.bookAuthor = downloadLink.html()
+                    }
+                } else {
+                    val regex = "([^\\/]+\$)".toRegex()
+                    val extensionsLink = regex.find(downloadLink.attr("href"))?.value
+                    if (extensionsLink != null) {
+                        when (extensionsLink) {
+                            "fb2" -> book.fbLink = downloadLink.attr("href")
+                            "txt" -> book.txtLink = downloadLink.attr("href")
+                            "pdf" -> book.pdfLink = downloadLink.attr("href")
+                            "epub" -> book.epubLink = downloadLink.attr("href")
+                            "mobi" -> book.mobiLink = downloadLink.attr("href")
+                            "rtf" -> book.rtfLink = downloadLink.attr("href")
+                        }
+                    }
+                }
+            }
+
+        docInside.select("div#main").select("img")
+            .forEach { image ->
+                if (image.attr("title").equals("Cover image")) {
+                    book.bookImage = "$BASE_URL${image.attr("src")}"
+                }
+            }
+
+        docInside.select("div#main").select("p")
+            .forEach { description ->
+                if (description.parent()?.attr("id").equals("main")) {
+                    book.bookDescription = description.text()
+                }
+            }
+
+        return book
+    }
+
     fun downloadBook(
         downloadLink: String
     ) {
@@ -84,11 +127,13 @@ class FlibustaApi {
             override fun onResponse(call: Call, response: Response) {
                 response.use {
                     if (!response.isSuccessful) throw IOException("Unexpected code $response")
-                    FileUtils().writeFile(
-                        downloadLink.filter { it.isDigit() },
-                        extensionResolver,
-                        response.body!!
-                    )
+                    response.body?.let { responseBody ->
+                        FileUtils().writeFile(
+                            downloadLink.filter { it.isDigit() },
+                            extensionResolver,
+                            responseBody
+                        )
+                    }
                 }
             }
         })
